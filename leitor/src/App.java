@@ -13,8 +13,7 @@ import java.util.Scanner;
 
 public class App {
 
-    private static final String FILENAME = "C:\\Users\\Hiago\\Downloads\\Hipermidia-main\\Hipermidia-main\\leitor\\src\\verbetesWikipedia.xml";
-
+    private static final String FILENAME = "verbetesWikipedia.xml";
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         // Instantiate the Factory
@@ -49,6 +48,7 @@ public class App {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
+        scan.close();
 
     }
 }
