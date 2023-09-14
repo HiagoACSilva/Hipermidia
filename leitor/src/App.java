@@ -5,32 +5,28 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.Scanner;
+
 public class App {
 
-    private static final String FILENAME = "src/verbetesWikipedia.xml";
+    private static final String FILENAME = "C:\\Users\\Hiago\\Downloads\\Hipermidia-main\\Hipermidia-main\\leitor\\src\\verbetesWikipedia.xml";
 
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         // Instantiate the Factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         System.out.println("Digite o titulo");
-        scan.nextLine();
+        String pesquisa = scan.nextLine();
         try {
 
             // parse XML file
             DocumentBuilder db = dbf.newDocumentBuilder();
 
             Document doc = db.parse(new File(FILENAME));
-
-            System.out.println("Root Element :" + doc.getDocumentElement().getNodeName());
-            System.out.println("------");
-
             // get <staff>
             NodeList list = doc.getElementsByTagName("page");
             System.out.println(list.getLength());
@@ -43,8 +39,10 @@ public class App {
                     // get text
                     String id = element.getElementsByTagName("id").item(0).getTextContent();
                     String title = element.getElementsByTagName("title").item(0).getTextContent();
-                    System.out.println(id);
-                    System.out.println("titulo " + (temp+1) + " : " + title);
+                    if(title.contains(pesquisa)){
+                        System.out.println("Id: " + id + ", titulo " + (temp + 1) + " : " + title);
+                    }
+                        
                 }
             }
 
@@ -53,5 +51,4 @@ public class App {
         }
 
     }
-
 }
