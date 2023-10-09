@@ -18,7 +18,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class App {
-    private static final String FILENAME = "verbetesWikipedia.xml";
+    private static final String FILENAME = "src\\verbetesWikipedia.xml";
     private static HashMap<Integer, Pagina> Paginas = new HashMap<>(); // CACHE DE UM HASHMAP EM QUE A <STRING, LIST>
                                                                        // SERIA STRING PESQUISA E LIST DE PAGINAS DESSA
                                                                        // PESQUISA
@@ -27,40 +27,44 @@ public class App {
         Scanner scan = new Scanner(System.in);
         cache();
         // Instantiate the Factory
-        String pesquisa;
+        String[] pesquisa;
         System.out.println("Digite o titulo");
         do {
             // INICIANDO A PESQUISA, USANDO A STRING DE PESQUISA PARA SABER SE NO CACHE
             // EXISTE
-            ArrayList<Pesquisa> Resultados = new ArrayList<>();
-            pesquisa = scan.nextLine().toLowerCase();
 
-            for (int i = 0; i < Paginas.size(); i++) {
-                int points = 0;
-                if (Paginas.get(i).getWords().containsKey(pesquisa)) {
-                    if (Paginas.get(i).getWords().get(pesquisa) > 0)
-                        points = Paginas.get(i).getWords().get(pesquisa).intValue();
+            ArrayList<Pesquisa> Resultados = new ArrayList<>();
+            pesquisa = scan.nextLine().toLowerCase().split(" ");
+
+            if (!pesquisa[0].equals("sair")) {
+                for (int i = 0; i < Paginas.size(); i++) {
+                    int points = 0;
+                    for (int j = 0; j < pesquisa.length; j++) {
+                        if (Paginas.get(i).getWords().containsKey(pesquisa[j])) {
+                            points += Paginas.get(i).getWords().get(pesquisa[j]).intValue();
+                        }
+                    }
                     Pesquisa atual = new Pesquisa(Paginas.get(i).getId(), Paginas.get(i).getTitle(), points);
                     Resultados.add(atual);
                 }
-            }
-            if(!Resultados.isEmpty()){
-                Comparator<Pesquisa> relevancia = Collections.reverseOrder(Comparator.comparing(Pesquisa::getPoints));
-                Collections.sort(Resultados, relevancia);
-                for (int i = 0; i < Resultados.size(); i++) {
-                    if (i <= 20) {
-                        System.out.println(
-                                "Id: " + Resultados.get(i).getId() + ", Titulo: " + Resultados.get(i).getTitulo()
-                                        + ", QdP: "
-                                        + Resultados.get(i).getPoints());
+                if (!Resultados.isEmpty()) {
+                    Comparator<Pesquisa> relevancia = Collections
+                            .reverseOrder(Comparator.comparing(Pesquisa::getPoints));
+                    Collections.sort(Resultados, relevancia);
+                    for (int i = 0; i < Resultados.size(); i++) {
+                        if (i <= 20) {
+                            System.out.println(
+                                    "Id: " + Resultados.get(i).getId() + ", Titulo: " + Resultados.get(i).getTitulo()
+                                            + ", QdP: "
+                                            + Resultados.get(i).getPoints());
+                        }
                     }
+                } else {
+                    System.out.println("Nada Encontrado");
                 }
-            }else{
-                System.out.println("Nada Encontrado");
+                System.out.println("Nova Pesquisa?");
             }
-            System.out.println("Nova Pesquisa?");
-
-        } while (!pesquisa.equals("sair"));
+        } while (!pesquisa[0].equals("sair"));
         scan.close();
 
     }
