@@ -19,34 +19,53 @@ import org.xml.sax.SAXException;
 
 public class App {
     private static final String FILENAME = "src\\verbetesWikipedia.xml";
-    private static HashMap<Integer, Pagina> Paginas = new HashMap<>(); // CACHE DE UM HASHMAP EM QUE A <STRING, LIST>
-                                                                       // SERIA STRING PESQUISA E LIST DE PAGINAS DESSA
-                                                                       // PESQUISA
+    private static HashMap<Integer, Pagina> Paginas = new HashMap<>(); // HASHMAP DAS PAGINAS
+    // <INTEGER, PAGINA> INTEGER : O NUMERO DA PAGINA, PAGINA: A PAGINA EM QUESTAO
 
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        cache();
-        // Instantiate the Factory
-        String[] pesquisa;
+        cache();// FUNCAO QUE ADICIONA O ARQUIVO PARA O CACHE
+        String[] pesquisa; // VETOR DAS PALAVRAS BUSCADAS, SEPARADAS POR " "
         System.out.println("Digite o titulo");
         do {
-            // INICIANDO A PESQUISA, USANDO A STRING DE PESQUISA PARA SABER SE NO CACHE
+            // INICIANDO A PESQUISA, USANDO O VETOR DE PESQUISA PARA SABER SE NO CACHE
             // EXISTE
 
-            ArrayList<Pesquisa> Resultados = new ArrayList<>();
-            pesquisa = scan.nextLine().toLowerCase().split(" ");
+            ArrayList<Pesquisa> Resultados = new ArrayList<>(); // CRIANDO A LISTA DE RESULTADOS
+            pesquisa = scan.nextLine().toLowerCase().split(" ");// SEPARANDO OS TERMOS A SEREM BUSCADOS
 
-            if (!pesquisa[0].equals("sair")) {
+            if (!pesquisa[0].equals("sair")) { // ENQUANTO A PRIMEIRA PALAVRA FOR DIFERENTE DE "SAIR"
                 for (int i = 0; i < Paginas.size(); i++) {
-                    int points = 0;
+                    int[] points = new int[pesquisa.length];// SE CRIA O VETOR DE PONTOS DE CADA PALAVRA
                     for (int j = 0; j < pesquisa.length; j++) {
+                        // VERIFICA SE EXISTE A PALAVRA BUSCADA NO HASHMAP DA PAGINA
                         if (Paginas.get(i).getWords().containsKey(pesquisa[j])) {
-                            points += Paginas.get(i).getWords().get(pesquisa[j]).intValue();
+                            // SE EXISTE, ENTAO SE SOMA O VALOR DE RELEVANCIA DA PALAVRA NO VETOR DE PONTOS
+                            points[j] = 0;
+                            points[j] += Paginas.get(i).getWords().get(pesquisa[j]).intValue();
+
                         }
                     }
-                    Pesquisa atual = new Pesquisa(Paginas.get(i).getId(), Paginas.get(i).getTitle(), points);
-                    Resultados.add(atual);
+                    if (points != null) {
+                        int pointstotal = 1;
+                        // MULTIPLICA OS VALORES DOS PONTOS ADQUIRIDOS DE CADA PALAVRA
+                        // ISSO ACARRETA EM, SE UMA PALAVRA NAO EXISTIR, SEU VALOR DE PONTOS SERÁ 0
+                        // LOGO QUALQUER VALOR MULTIPLICADO POR 0 DARIA 0
+                        // LOGO SE FOR PESQUISADO RABBIT COMPUTER E NA PAGINA A PONTUAÇÃO SER
+                        // 0 PARA RABBIT E 120 PARA COMPUTER, O PESO SERÁ 0 POIS 120x0=0
+                        for (int k = 0; k < points.length; k++) {
+                            pointstotal *= points[k];
+                        }
+                        // E AQUI É FILTRADO PARA SÓ APARECER A PAGINA SE SUA PONTUAÇÃO NÃO FOR 0
+                        if (pointstotal > 1) {
+                            Pesquisa atual = new Pesquisa(Paginas.get(i).getId(), Paginas.get(i).getTitle(),
+                                    pointstotal);
+                            Resultados.add(atual);
+                        }
+                    }
                 }
+                // AQUI É FEITO O PRINT DA PESQUISA, MAS ANTES USADO O COMPARATOR PARA ORGANIZAR
+                // O VETOR
                 if (!Resultados.isEmpty()) {
                     Comparator<Pesquisa> relevancia = Collections
                             .reverseOrder(Comparator.comparing(Pesquisa::getPoints));
